@@ -1,0 +1,54 @@
+import java.util.*;
+public class xiaobu {
+	public List<FeedItem> reorderFeedItems(List<FeedItem> inputItems) {
+//思路：用两个ArrayList辅助，遍历原先系统排序好的item，符合要求的放newInputItems，超过10个就只取10个，没超过就从自己淘汰的oldInputItems取出弥补10个。
+ List<FeedItem> newInputItems  = new ArrayList<>();//用来存放重排后item
+ List<FeedItem> oldInputItems = new ArrayList<>();//存放一些不符合要求
+	String author = "";
+	String category = "";
+	int categoryInt = 0;//用来辅助判断相同category出现的次数
+	for(FeedItem inputItem:inputItems ) {//遍历inputItems 要求2.1：尽可能按照inputItems的顺序返回FeedItem。
+		if(inputItems.size<10) {//要求1 ：返回10个
+			if(!author.equals(inputItem.getAuthor())) {//要求2.2 相同author的FeedItem不相邻的情况
+				if(categoryInt<2) {//要求2.3 重排时, 相同category的FeedItem最多连续显示2条
+					newInputItems.add(inputItem);//全部要求符合，就加入新的list
+					author = inputItem.getAuthor();
+					if(category.equals(inputItem.getCategory())){
+						categoryInt++;
+					}
+					category = inputItem.getCategory();
+				}else {
+					newInputItems.add(inputItem);//要求2.3  当这一条要求与要求2 .2 冲突时，优先选择符合2 .2 的FeedItem.
+				}
+			}
+			else//要求2.2：如果author相同的话，就暂时放入废弃 
+			{
+				oldInputItems.add(inputItem);
+			}
+		}
+	}
+	//到上面为止已经遍历了完成inputItems，如果重排后数量不足10个就从oldInputItems加入，方法同上。
+	 if(inputItems.size<10) {
+		 for(FeedItem inputItem:oldInputItems) {
+			 if(inputItems.size<10) {
+				 if(!author.equals(inputItem.getAuthor())) {
+					 if (categoryInt<3){
+							newInputItems.add(inputItem);
+							author = inputItem.getAuthor();
+							if(category.equals(inputItem.getCategory())){
+								categoryInt++;
+							}
+							category = inputItem.getCategory();
+						}else{
+							newInputItems.add(inputItem);
+						}
+				 }
+				 else {
+					 oldInputItems.add(inputItem);
+					}
+			 }
+		 }
+	 }
+
+}
+}
